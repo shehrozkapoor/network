@@ -1,0 +1,78 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+{% if page_obj %}
+{% for post in page_obj %}
+<div class="card mt-4" style="margin-left:10%; margin-right:10%;">
+  <div class="card-header" style="text-align: left;">
+    <a href="{% url 'spec_profile' post.user.username %}">posted_by: {{post.user.username}}</a>
+    {% if request.user.username == post.user.username%}
+    <button class="btn btn-primary edit_btn_{{post.id}}" id="edit_btn" style="float: right;"
+      name={{post.id}}>Edit</button>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="text_area_{{post.id}}">
+      <div class="edit_post_block">
+        <textarea class="form-control text_area_field_{{post.id}}" id="exampleFormControlTextarea1"
+          name="post_text_field" rows="2" placeholder="Enter your text Here">{{post.text}}</textarea>
+        <button class="btn btn-primary mt-2 edit_save_btn" name={{post.id}} id="save_btn_{{post.id}}"
+          style="float:right;">Save</button>
+      </div>
+      <h3 class="text_{{post.id}}">{{post.text}}</h3>
+    </div>
+ <div class="svg_icon_{{post.id}}" id={{post.id}} value="{{post.id}}">
+    <svg width="1em" height="1em" id={{post.id}} viewBox="0 0 16 16" class="bi bi-heart-fill " fill="{% if request.user in post.likes.all %}
+          red
+          {% else %}
+          black
+          {% endif %}" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+    </svg>
+    </div>
+    <div class="post_likes_count_{{post.id}}">{{post.likes.count}}</div>
+  </div>
+  <div class="card-footer text-muted " style="text-align: left;">
+    {{post.timestamp}}
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="alert alert-primary" role="alert">
+  No Posts Available
+</div>
+{% endif %}
+<hr>
+
+<div class="container">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a href="?page=1" class="page-link">&laquo; First</a></li>
+    <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}" class="page-link">Previous</a></li>
+    {% else %}
+    <li class="page-item disabled"><a class="page-link">&laquo; First</a></li>
+    <li class="page-item disabled"><a class="page-link">Previous</a></li>
+    {% endif %}
+
+
+    {% if page_obj.number %}
+    <li class="page-item"><a class="page-link">{{ page_obj.number }}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link">0</a></li>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a></li>
+    <li class="page-item"><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last &raquo;</a></li>
+    {% else %}
+    <li class="page-item disabled"><a class="page-link">Next</a></li>
+    <li class="page-item disabled"><a class="page-link">Last &raquo;</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'network/main.js' %}"></script>
+{% endblock %}
